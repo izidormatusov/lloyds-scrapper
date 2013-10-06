@@ -3,6 +3,8 @@
 Library provides simple API to download couple last transactions for accounts.
 Useful for integration with [Ledger](http://www.ledger-cli.org/).
 
+At the moment, library supports only downloading last couple transactions.
+
 ## Sample usage
 
 ```python
