@@ -1,8 +1,9 @@
+from datetime import date, datetime
+from decimal import Decimal as D
 import csv
 import mechanize
 import re
-from decimal import Decimal as D
-from datetime import date, datetime
+
 
 class Transaction(object):
     """ Single transaction """
@@ -93,16 +94,20 @@ class LloydsBank(object):
         # Ignore robots, they prevent everybody
         self._agent.set_handle_robots(False)
         self._agent.addheaders = [('User-agent', self.USER_AGENT)]
-        self.accounts = [] 
+        self.accounts = []
 
     def login(self, user_id, password, secret):
         """ Log into internet account """
+        assert user_id and password and secret
+
         # Login credentials
         self._agent.open(self.LOGIN_URL)
-        self._agent.select_form('frmLogin')
+        form_name = 'frmLogin'
+        self._agent.select_form(form_name)
         self._agent['frmLogin:strCustomerLogin_userID'] = user_id
         self._agent['frmLogin:strCustomerLogin_pwd'] = password
-        self._agent.submit()
+        response = self._agent.submit()
+        assert response.code == 200 and form_name not in response.read()
 
         # Secret information
         form_name = 'frmentermemorableinformation1'
