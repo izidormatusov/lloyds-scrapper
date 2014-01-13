@@ -1,3 +1,4 @@
+import csv
 import mechanize
 import re
 from decimal import Decimal as D
@@ -133,10 +134,5 @@ class LloydsBank(object):
         self._agent.select_form('frmTest')
         self._agent.submit()
 
-        transactions = []
-        csv = self._agent.response().read().splitlines()
-        header = csv[0].split(',')
-        for row in csv[1:]:
-            fields = dict(zip(header, row.split(',')))
-            transactions.append(Transaction(fields))
-        return transactions
+        rows = csv.DictReader(self._agent.response())
+        return [Transaction(row) for row in rows]
