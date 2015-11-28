@@ -129,15 +129,16 @@ class LloydsBank(object):
         self.accounts = []
         for link in self._agent.links():
             attrs = dict(link.attrs)
-            if 'lkImageRetail' in attrs.get('id', ''):
+            if 'ViewOnlineStatementsAnchor1' in attrs.get('class', ''):
                 self.accounts.append(link.absolute_url)
 
     def get_transactions(self, account_url):
         self._agent.open(account_url)
         export_link = self._agent.find_link(text="Export")
         self._agent.follow_link(export_link)
-        self._agent.select_form('frmTest')
-        self._agent.submit()
+        self._agent.select_form('export-statement-form')
+        self._agent['export-format'] = ['Internet banking text/spreadsheet (.CSV)']
+        response = self._agent.submit()
 
         rows = csv.DictReader(self._agent.response())
         return [Transaction(row) for row in rows]
